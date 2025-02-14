@@ -6,10 +6,12 @@ from audio_to_phoneme import process_audio
 from text_phoneme_extraction import text_to_phonemes
 from phone_grouper import PhonemeGrouper
 from compare_visualize import compare_phonemes, visualize_phoneme_comparison
+from sequence_matcher import find_phoneme_matches  # Import the new functionality
 
 # Set Paths
 MFA_DICTIONARY_PATH = r"C:\Users\suraj\.conda\envs\mfa\Lib\site-packages\montreal_forced_aligner\tests\data\dictionaries\english_us_mfa_reduced.dict"
 MFA_MODEL = "english_mfa"  # Ensure this model is installed
+
 def main():
     # Step 1: Record Audio
     recorder = AudioRecorder()
@@ -46,10 +48,15 @@ def main():
     for phoneme_info in phoneme_timestamps:
         print(f"  🔊 {phoneme_info['phoneme']} - Start: {phoneme_info['start']}s, End: {phoneme_info['end']}s")
 
-    # Step 5: Extract Phonemes from Expected Text
-    expected_phonemes = text_to_phonemes("wake up at 6 am")
+    # Step 5: Extract Expected Phonemes from Reference Text
+    reference_text = "hello good morning"  # Replace with the actual text you want to analyze against
+    expected_phonemes = text_to_phonemes(reference_text)
 
-    # Step 6: Group Phonemes Based on Word Durations
+    print("\n🔍 Expected Phonemes for Reference Text:")
+    for word, phonemes in expected_phonemes.items():
+        print(f"  📖 {word}: {' '.join(phonemes)}")
+
+    # Step 6: Group Phonemes for Each Word Based on Alignment
     grouper = PhonemeGrouper(mfa_model=MFA_MODEL, dict_path=MFA_DICTIONARY_PATH)
     grouped_phonemes = grouper.group_phonemes(audio_path, transcript)
 
@@ -76,6 +83,29 @@ def main():
     print("\n📊 Visualizing pronunciation comparison...")
     comparison_results = compare_phonemes(actual_phoneme_map, expected_phonemes)
     visualize_phoneme_comparison(comparison_results)
+
+    # Step 9: Measure Phoneme Sequence Matching
+    print("\n🔗 Phoneme Sequence Matching:")
+
+    # Prepare data for `find_phoneme_matches`
+    transcribed_text = transcript.split()  # Split the transcribed text into words
+    timestamps = {word_info['word']: (word_info['start'], word_info['end']) for word_info in word_timestamps}
+    expected_text = [(word, expected_phonemes[word]) for word in transcribed_text if word in expected_phonemes]
+
+    sequence_match_results = find_phoneme_matches(
+        expected_text=expected_text,
+        transcribed_text=transcribed_text,
+        timestamps=timestamps,
+        phoneme_timestamps=phoneme_timestamps
+    )
+
+    # Display results
+    for word, result in sequence_match_results.items():
+        print(f"\nWord: {word}")
+        print(f"  ✅ Match Percentage: {result['match_percentage']:.2f}%")
+        print(f"  🎯 Matched Phonemes: {result['matched_phonemes']}")
+        print(f"  ℹ️ Details: {result['details']}")
+
 
 if __name__ == "__main__":
     main()
