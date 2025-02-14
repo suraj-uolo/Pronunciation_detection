@@ -10,11 +10,10 @@ from compare_visualize import compare_phonemes, visualize_phoneme_comparison
 # Set Paths
 MFA_DICTIONARY_PATH = r"C:\Users\suraj\.conda\envs\mfa\Lib\site-packages\montreal_forced_aligner\tests\data\dictionaries\english_us_mfa_reduced.dict"
 MFA_MODEL = "english_mfa"  # Ensure this model is installed
-#commet
 def main():
     # Step 1: Record Audio
     recorder = AudioRecorder()
-    audio_path = recorder.record_audio(duration=3)
+    audio_path = recorder.record_audio(duration=4)
 
     # Step 2: Transcribe the Recorded Audio
     transcriber = Transcriber()
@@ -48,7 +47,7 @@ def main():
         print(f"  🔊 {phoneme_info['phoneme']} - Start: {phoneme_info['start']}s, End: {phoneme_info['end']}s")
 
     # Step 5: Extract Phonemes from Expected Text
-    expected_phonemes = text_to_phonemes("good morning world")
+    expected_phonemes = text_to_phonemes("wake up at 6 am")
 
     # Step 6: Group Phonemes Based on Word Durations
     grouper = PhonemeGrouper(mfa_model=MFA_MODEL, dict_path=MFA_DICTIONARY_PATH)

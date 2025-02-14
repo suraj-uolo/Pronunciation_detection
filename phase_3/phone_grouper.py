@@ -15,7 +15,6 @@ class PhonemeGrouper:
             return []
 
         word_timestamps = alignment_data['words']
-#commet
         # Step 2: Extract phonemes from audio
         phoneme_timestamps = process_audio(audio_path)
 

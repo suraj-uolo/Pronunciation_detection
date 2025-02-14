@@ -2,7 +2,6 @@ import os
 import shutil
 import subprocess
 from praatio import textgrid
-#coment
 class ForcedAligner:
     def __init__(self, mfa_model="english_mfa", dict_path=r"C:\Users\suraj\.conda\envs\mfa\Lib\site-packages\montreal_forced_aligner\tests\data\dictionaries\english_us_mfa_reduced.dict", recordings_dir="recordings"):
         self.mfa_model = mfa_model

@@ -3,7 +3,6 @@ import wave
 import sounddevice as sd
 import numpy as np
 from datetime import datetime
-#commet
 class AudioRecorder:
     def __init__(self, recordings_dir="recordings", samplerate=16000):
         self.recordings_dir = recordings_dir

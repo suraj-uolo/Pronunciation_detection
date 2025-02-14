@@ -1,5 +1,4 @@
 from allosaurus.app import read_recognizer
-#commet
 def process_audio(filepath: str):
     """Process the recorded audio file and return phoneme data."""
     try:

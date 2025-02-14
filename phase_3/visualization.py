@@ -23,7 +23,6 @@ def visualize_phonemes(phoneme_timestamps):
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=5, fontsize=8)
     plt.tight_layout()
     plt.show()
-#commet
 def visualize_alignment(word_timestamps, phoneme_timestamps):
     """
     Visualizes word and phoneme alignment on a timeline.

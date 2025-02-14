@@ -18,4 +18,4 @@ class Transcriber:
         except sr.RequestError as e:
             print(f"❌ Could not request results from Google Speech Recognition service; {e}")
             return ""
-        #commet
+    

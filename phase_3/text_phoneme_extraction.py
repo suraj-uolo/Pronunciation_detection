@@ -14,4 +14,3 @@ def text_to_phonemes(sentence: str):
         raise
 
     return phonemes_dict
-#commet

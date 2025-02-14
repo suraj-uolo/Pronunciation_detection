@@ -10,7 +10,6 @@ def compare_phonemes(actual, expected):
         list: A list of dictionaries containing word-level comparison results.
     """
     comparison_results = []
-#commet
     for word, actual_phoneme in actual.items():
         expected_phoneme = expected.get(word, "")
         
