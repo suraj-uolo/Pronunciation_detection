@@ -1,0 +1,44 @@
+import os
+import wave
+import logging
+import sounddevice as sd
+import numpy as np
+from datetime import datetime
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+class AudioRecorder:
+    def __init__(self, recordings_dir="recordings", samplerate=16000):
+        self.recordings_dir = recordings_dir
+        self.samplerate = samplerate
+        os.makedirs(self.recordings_dir, exist_ok=True)
+
+    def record_audio(self, duration: int = 5, filename: str = None) -> str:
+        """Records audio for a given duration and saves it as a WAV file."""
+        if not filename:
+            filename = f"recording_{datetime.now().strftime('%Y%m%d_%H%M%S')}.wav"
+        filepath = os.path.join(self.recordings_dir, filename)
+
+        try:
+            logging.info(f"🎙️ Recording for {duration} seconds...")
+
+            # Correct way to record audio
+            audio = sd.rec(int(self.samplerate * duration), samplerate=self.samplerate, channels=1, dtype=np.int16)
+            sd.wait()  # Wait for recording to finish
+
+            # Save as WAV
+            with wave.open(filepath, "wb") as wf:
+                wf.setnchannels(1)
+                wf.setsampwidth(2)  # 16-bit audio (2 bytes per sample)
+                wf.setframerate(self.samplerate)
+                wf.writeframes(audio.tobytes())
+
+            logging.info(f"✅ Recording saved: {filepath}")
+            return filepath
+
+        except sd.PortAudioError as e:
+            logging.error(f"🎤 Sounddevice error: {e}")
+            raise
+        except Exception as e:
+            logging.error(f"❌ Unexpected error while recording: {e}")
+            raise
