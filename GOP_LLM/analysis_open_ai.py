@@ -22,16 +22,16 @@ def evaluate_pronunciation_open_ai(transcribed_text: str, expected_text: str, au
     Args:
         transcribed_text (str): The user's spoken text after transcription.
         expected_text (str): The correct expected text.
-        audio_phonemes (str): Phonemes extracted from the user's speech.
+        audio_phonemes (str):Top 3 probable Phonemes for each phoneme extracted from the user's speech.
         expected_phonemes (str): The correct phonemes for comparison.
 
     Returns:
         dict: Contains AI-generated pronunciation feedback and token usage details.
     """
-    prompt = (f"Compare the user's pronunciation with the expected text and phonemes. "
+    prompt = (f"Compare the user's pronunciation with the expected text and phonemes. Check if any of the top 3 probable phonemes for each phoneme extracted from the user's speech match the expected phonemes. "
               f"Ignore minor variations and background noise. "
               f"Focus on meaningful phoneme mismatches. "
-              f"Accept natural deviations such as J in place I as both libraries give slightly varried phoneme outputs."
+              f"Accept natural deviations such as J in place I  or background noise in audio phonemes as both libraries give slightly varried phoneme outputs."
               f"Expected Text: `{expected_text}` "
               f"Transcribed Text: `{transcribed_text}` "
               f"Expected Phonemes: `{expected_phonemes}` "

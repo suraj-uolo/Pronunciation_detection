@@ -14,7 +14,7 @@ def main():
         # Step 1: Record Audio
         logging.info("\n🎤 Recording audio...")
         recorder = AudioRecorder()
-        audio_path = recorder.record_audio(duration=3)
+        audio_path = recorder.record_audio(duration=5)
         logging.info(f"✅ Audio recorded: {audio_path}")
 
         # Step 2: Transcribe Audio
@@ -43,7 +43,7 @@ def main():
         for word, phoneme_str in formatted_expected_phonemes.items():
             logging.info(f"  📖 {word}: {phoneme_str}")
 
-        # Step 4: Process Recorded Audio to Extract Phonemes
+        # Step 4: Process Recorded Audio to Extract Top-3 Phonemes per Timestamp
         logging.info("\n🎵 Extracting phonemes from audio...")
         phoneme_processor = AudioPhonemeProcessor()
         phoneme_timestamps = phoneme_processor.process_audio(audio_path)
@@ -53,9 +53,11 @@ def main():
             return
 
         logging.info("\n🔊 Extracted Audio Phonemes:")
-        extracted_audio_phonemes = [p["phoneme"] for p in phoneme_timestamps]
+        extracted_audio_phonemes = []
         for phoneme_info in phoneme_timestamps:
-            logging.info(f"  🔊 {phoneme_info['phoneme']} - Start: {phoneme_info['start']}s, End: {phoneme_info['end']}s")
+            top_phonemes = ", ".join(phoneme_info["phonemes"])  # Include all top 3 phonemes
+            extracted_audio_phonemes.append(top_phonemes)  # Collect all phonemes for evaluation
+            logging.info(f"  🔊 {top_phonemes} - Start: {phoneme_info['start']}s, End: {phoneme_info['end']}s")
 
         # Step 5: Choose LLM for Pronunciation Evaluation
         logging.info("\n⚙️ Select LLM: [1] OpenAI | [2] Local LLM")
@@ -66,7 +68,7 @@ def main():
             evaluation_result = evaluate_pronunciation_open_ai(
                 transcribed_text=transcript,
                 expected_text=reference_text,
-                audio_phonemes=", ".join(extracted_audio_phonemes),
+                audio_phonemes=" | ".join(extracted_audio_phonemes),  # Now includes top-3 phonemes
                 expected_phonemes=", ".join(formatted_expected_phonemes.values())
             )
         elif choice == "2":
@@ -74,7 +76,7 @@ def main():
             evaluation_result = evaluate_pronunciation_llama(
                 transcribed_text=transcript,
                 expected_text=reference_text,
-                audio_phonemes=", ".join(extracted_audio_phonemes),
+                audio_phonemes=" | ".join(extracted_audio_phonemes),  # Now includes top-3 phonemes
                 expected_phonemes=", ".join(formatted_expected_phonemes.values())
             )
         else:

@@ -65,7 +65,6 @@ def create_container(title, content):
 # Function to Format LLM Feedback for Proper Display
 def format_llm_feedback(feedback):
     """Cleans and formats LLM feedback for proper HTML rendering in Streamlit."""
-
     feedback = re.sub(r"[*•]", "", feedback)  # Remove asterisks and bullet points
     feedback = re.sub(r"###\s*", "", feedback)  # Remove '###' headers
     feedback = feedback.replace("\n", "<br>")  # Convert newlines to HTML line breaks
@@ -90,7 +89,7 @@ with col1:
     recorder = AudioRecorder()
     if st.button("🔴 Start Recording"):
         st.write("Recording... Please wait ⏳")
-        st.session_state.audio_path = recorder.record_audio(duration=4)
+        st.session_state.audio_path = recorder.record_audio(duration=10)
         st.success("Recording Complete ✅")
         st.audio(st.session_state.audio_path, format="audio/wav")
 
@@ -145,7 +144,7 @@ try:
         st.error("No phoneme data extracted. Please try again.")
         st.stop()
 
-    extracted_audio_phonemes = [p["phoneme"] for p in phoneme_timestamps]
+    extracted_audio_phonemes = [" | ".join(p["phonemes"]) for p in phoneme_timestamps]  # Include all top 3 phonemes
 
     # **Display Results in Three Columns**
     st.markdown("---")
@@ -157,7 +156,7 @@ try:
     ])
 
     extracted_phoneme_content = "".join([
-        f'<div class="item-row">🔊 <b>{p["phoneme"]}</b> - <span class="highlight">{p["start"]:.2f}s → {p["end"]:.2f}s</span></div>'
+        f'<div class="item-row">🔊 <b>{", ".join(p["phonemes"])}</b> - <span class="highlight">{p["start"]:.2f}s → {p["end"]:.2f}s</span></div>'
         for p in phoneme_timestamps
     ])
 
@@ -172,14 +171,14 @@ try:
         evaluation_result = evaluate_pronunciation_open_ai(
             transcribed_text=transcript,
             expected_text=reference_text,
-            audio_phonemes=", ".join(extracted_audio_phonemes),
+            audio_phonemes=" | ".join(extracted_audio_phonemes),  # Now includes top-3 phonemes
             expected_phonemes=", ".join(expected_phoneme_str.values())
         )
     else:
         evaluation_result = evaluate_pronunciation_llama(
             transcribed_text=transcript,
             expected_text=reference_text,
-            audio_phonemes=", ".join(extracted_audio_phonemes),
+            audio_phonemes=" | ".join(extracted_audio_phonemes),  # Now includes top-3 phonemes
             expected_phonemes=", ".join(expected_phoneme_str.values())
         )
 
