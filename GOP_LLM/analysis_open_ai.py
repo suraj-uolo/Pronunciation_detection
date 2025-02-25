@@ -30,6 +30,7 @@ def evaluate_pronunciation_open_ai(transcribed_text: str, expected_text: str, au
     """
     prompt = (f"Compare the user's pronunciation with the expected text and phonemes."
               f"Check first if the trancribed text matches the expected text. Then only focus on phoneme comparison for matched words."
+              f"Each audio phoneme has three probable phonemes. Compare these with the expected phonemes."
               f"A word is considered correctly pronounced if any of the top three probable phonemes for each expected phoneme match."
               f"Ignore minor variations, background noise, and natural deviations (e.g., 'J' for 'I')."
               f"Focus on meaningful mismatches. Provide a crisp comparison per word with a phoneme and percentage match."

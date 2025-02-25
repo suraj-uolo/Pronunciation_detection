@@ -5,4 +5,4 @@ pocketsphinx
 .env
 Allosaurus_research.pdf
 cleaned_recordings
-
+__pycache__
