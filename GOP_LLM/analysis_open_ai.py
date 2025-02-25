@@ -28,17 +28,19 @@ def evaluate_pronunciation_open_ai(transcribed_text: str, expected_text: str, au
     Returns:
         dict: Contains AI-generated pronunciation feedback and token usage details.
     """
-    prompt = (f"Compare the user's pronunciation with the expected text and phonemes."
-              f"Check first if the trancribed text matches the expected text. Then only focus on phoneme comparison for matched words."
-              f"Each audio phoneme has three probable phonemes. Compare these with the expected phonemes."
-              f"A word is considered correctly pronounced if any of the top three probable phonemes for each expected phoneme match."
-              f"Ignore minor variations, background noise, and natural deviations (e.g., 'J' for 'I')."
-              f"Focus on meaningful mismatches. Provide a crisp comparison per word with a phoneme and percentage match."
-              f"Output only the phoneme comparison and percentage match per word—nothing else."
-              f"Expected Text: `{expected_text}` "
-              f"Transcribed Text: `{transcribed_text}` "
-              f"Expected Phonemes: `{expected_phonemes}` "
-              f"Audio Phonemes: `{audio_phonemes}` "
+    prompt = (f"Compare the user's pronunciation with the expected phonemes."
+              f"1. First, check if the transcribed text matches the expected text."  
+              f"2. For words that match, compare their phonemes. Also Check if missing trancripted words have some phonemes in the audio."
+              f"3. Each expected phoneme there is a list of three probable phonemes from the audio."  
+              f"4. A phoneme is considered correct if it appears in any of the three probable phonemes."  
+              f"5. Calculate the match percentage per word based on the number of correct phonemes. Ignore stress markers."  
+              f"6. Provide a clear comparison per word, including expected phonemes, detected phonemes, and percentage match."  
+              f" 7. Focus only on meaningful mismatches—skip redundant details."  
+              f"Return only the phoneme comparison and percentage match per word—nothing else."
+              f"Expected Text:`{expected_text}`"
+              f"Transcribed Text: `{transcribed_text}`"
+              f"Expected Phonemes: `{expected_phonemes}`" 
+              f"Audio Phonemes: `{audio_phonemes}`"
             )   
 
     try:
