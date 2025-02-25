@@ -4,6 +4,7 @@ import os
 import logging
 import re
 from audio_recorder import AudioRecorder
+from audio_cleaner import AudioCleaner  # ✅ New import for audio cleaning
 from transcription import Transcriber
 from audio_to_phoneme import AudioPhonemeProcessor
 from text_to_phoneme import TextToPhonemeConverter
@@ -74,6 +75,8 @@ def format_llm_feedback(feedback):
 # Initialize Session State
 if 'audio_path' not in st.session_state:
     st.session_state.audio_path = None
+if 'cleaned_audio_path' not in st.session_state:
+    st.session_state.cleaned_audio_path = None
 
 st.title("🎙️ Speech Pronunciation Analysis")
 
@@ -89,7 +92,7 @@ with col1:
     recorder = AudioRecorder()
     if st.button("🔴 Start Recording"):
         st.write("Recording... Please wait ⏳")
-        st.session_state.audio_path = recorder.record_audio(duration=10)
+        st.session_state.audio_path = recorder.record_audio(duration=5)
         st.success("Recording Complete ✅")
         st.audio(st.session_state.audio_path, format="audio/wav")
 
@@ -108,6 +111,19 @@ if not st.session_state.audio_path:
     st.warning("Please record or upload an audio file to proceed.")
     st.stop()
 
+# **Step 2: Clean the Recorded/Uploaded Audio**
+st.subheader("🎵 Listen to Original and Cleaned Audio")
+cleaner = AudioCleaner()
+st.session_state.cleaned_audio_path = cleaner.clean_audio(st.session_state.audio_path)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.markdown("🎧 **Original Audio**")
+    st.audio(st.session_state.audio_path, format="audio/wav")
+with col2:
+    st.markdown("🎧 **Cleaned Audio**")
+    st.audio(st.session_state.cleaned_audio_path, format="audio/wav")
+
 # **Model Selection with Persistence**
 st.subheader("⚙️ Choose Model for Evaluation")
 
@@ -118,9 +134,9 @@ st.session_state.model_choice = st.radio("Select Model:", ["OpenAI", "Local LLM"
 
 # **Process Audio**
 try:
-    # **Transcription**
+    # **Transcription (Using Cleaned Audio)**
     transcriber = Transcriber()
-    transcript = transcriber.transcribe_audio(st.session_state.audio_path)
+    transcript = transcriber.transcribe_audio(st.session_state.cleaned_audio_path)
     if not transcript:
         st.error("No transcription available. Please try again.")
         st.stop()
@@ -137,9 +153,9 @@ try:
 
     expected_phoneme_str = {word: " ".join(phonemes) for word, phonemes in expected_phonemes.items()}
 
-    # **Extracted Phonemes from Audio**
+    # **Extracted Phonemes from Cleaned Audio**
     phoneme_processor = AudioPhonemeProcessor()
-    phoneme_timestamps = phoneme_processor.process_audio(st.session_state.audio_path)
+    phoneme_timestamps = phoneme_processor.process_audio(st.session_state.cleaned_audio_path)
     if not phoneme_timestamps:
         st.error("No phoneme data extracted. Please try again.")
         st.stop()
@@ -166,33 +182,20 @@ try:
         st.markdown(create_container("🔊 Extracted Audio Phonemes", extracted_phoneme_content), unsafe_allow_html=True)
 
     # **Evaluate Pronunciation**
-    evaluation_result = None
-    if st.session_state.model_choice == "OpenAI":
-        evaluation_result = evaluate_pronunciation_open_ai(
-            transcribed_text=transcript,
-            expected_text=reference_text,
-            audio_phonemes=" | ".join(extracted_audio_phonemes),  # Now includes top-3 phonemes
-            expected_phonemes=", ".join(expected_phoneme_str.values())
-        )
-    else:
-        evaluation_result = evaluate_pronunciation_llama(
-            transcribed_text=transcript,
-            expected_text=reference_text,
-            audio_phonemes=" | ".join(extracted_audio_phonemes),  # Now includes top-3 phonemes
-            expected_phonemes=", ".join(expected_phoneme_str.values())
-        )
-
-    # **Display LLM Output in the Third Column**
-    formatted_feedback = format_llm_feedback(evaluation_result.get("feedback", "No feedback received."))
-
-    feedback_content = f"""
-        <div class="item-row">💬 Feedback:<br>
-        <span class="highlight">{formatted_feedback}</span>
-        </div>
-    """
+    evaluation_result = evaluate_pronunciation_open_ai(
+        transcribed_text=transcript,
+        expected_text=reference_text,
+        audio_phonemes=" | ".join(extracted_audio_phonemes),
+        expected_phonemes=", ".join(expected_phoneme_str.values())
+    ) if st.session_state.model_choice == "OpenAI" else evaluate_pronunciation_llama(
+        transcribed_text=transcript,
+        expected_text=reference_text,
+        audio_phonemes=" | ".join(extracted_audio_phonemes),
+        expected_phonemes=", ".join(expected_phoneme_str.values())
+    )
 
     with col3:
-        st.markdown(create_container("📢 Pronunciation Feedback", feedback_content), unsafe_allow_html=True)
+        st.markdown(create_container("📢 Pronunciation Feedback", format_llm_feedback(evaluation_result.get("feedback", "No feedback received."))), unsafe_allow_html=True)
 
 except Exception as e:
     st.error(f"❌ An error occurred: {e}")

@@ -28,19 +28,17 @@ def evaluate_pronunciation_open_ai(transcribed_text: str, expected_text: str, au
     Returns:
         dict: Contains AI-generated pronunciation feedback and token usage details.
     """
-    prompt = (f"Compare the user's pronunciation with the expected text and phonemes. Check if any of the top 3 probable phonemes for each phoneme extracted from the user's speech match the expected phonemes. "
-              f"Ignore minor variations and background noise. "
-              f"Focus on meaningful phoneme mismatches. "
-              f"Accept natural deviations such as J in place I  or background noise in audio phonemes as both libraries give slightly varried phoneme outputs."
+    prompt = (f"Compare the user's pronunciation with the expected text and phonemes."
+              f"Check first if the trancribed text matches the expected text. Then only focus on phoneme comparison for matched words."
+              f"A word is considered correctly pronounced if any of the top three probable phonemes for each expected phoneme match."
+              f"Ignore minor variations, background noise, and natural deviations (e.g., 'J' for 'I')."
+              f"Focus on meaningful mismatches. Provide a crisp comparison per word with a phoneme and percentage match."
+              f"Output only the phoneme comparison and percentage match per word—nothing else."
               f"Expected Text: `{expected_text}` "
               f"Transcribed Text: `{transcribed_text}` "
               f"Expected Phonemes: `{expected_phonemes}` "
               f"Audio Phonemes: `{audio_phonemes}` "
-              f"Evaluate: "
-              f"Did the user say the expected words? "
-              f"Do key phonemes match? "
-              f"Ignore extra/unnecessary phonemes from noise. "
-              f"Provide a brief, clear assessment per word.")
+            )   
 
     try:
         logging.info("Sending request to OpenAI...")

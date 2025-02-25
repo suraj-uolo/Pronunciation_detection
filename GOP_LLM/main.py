@@ -1,5 +1,6 @@
 import logging
 from audio_recorder import AudioRecorder
+from audio_cleaner import AudioCleaner  # ✅ New import
 from transcription import Transcriber
 from audio_to_phoneme import AudioPhonemeProcessor
 from text_to_phoneme import TextToPhonemeConverter
@@ -17,16 +18,22 @@ def main():
         audio_path = recorder.record_audio(duration=5)
         logging.info(f"✅ Audio recorded: {audio_path}")
 
-        # Step 2: Transcribe Audio
-        logging.info("\n📝 Transcribing audio...")
+        # Step 2: Clean the Recorded Audio
+        logging.info("\n🧼 Cleaning audio to reduce noise...")
+        cleaner = AudioCleaner()
+        cleaned_audio_path = cleaner.clean_audio(audio_path)
+        logging.info(f"✅ Cleaned audio saved: {cleaned_audio_path}")
+
+        # Step 3: Transcribe Audio (Using Cleaned Audio)
+        logging.info("\n📝 Transcribing cleaned audio...")
         transcriber = Transcriber()
-        transcript = transcriber.transcribe_audio(audio_path)
+        transcript = transcriber.transcribe_audio(cleaned_audio_path)
 
         if not transcript:
             logging.warning("❌ No transcription available. Exiting.")
             return
 
-        # Step 3: Extract Expected Phonemes from Reference Text
+        # Step 4: Extract Expected Phonemes from Reference Text
         reference_text = "hello good morning"
         logging.info(f"\n📖 Reference Text: {reference_text}")  # Display reference text
         text_phoneme_converter = TextToPhonemeConverter()
@@ -43,10 +50,10 @@ def main():
         for word, phoneme_str in formatted_expected_phonemes.items():
             logging.info(f"  📖 {word}: {phoneme_str}")
 
-        # Step 4: Process Recorded Audio to Extract Top-3 Phonemes per Timestamp
-        logging.info("\n🎵 Extracting phonemes from audio...")
+        # Step 5: Process Cleaned Audio to Extract Top-3 Phonemes per Timestamp
+        logging.info("\n🎵 Extracting phonemes from cleaned audio...")
         phoneme_processor = AudioPhonemeProcessor()
-        phoneme_timestamps = phoneme_processor.process_audio(audio_path)
+        phoneme_timestamps = phoneme_processor.process_audio(cleaned_audio_path)
 
         if not phoneme_timestamps:
             logging.warning("❌ No phoneme data extracted. Exiting.")
@@ -59,7 +66,7 @@ def main():
             extracted_audio_phonemes.append(top_phonemes)  # Collect all phonemes for evaluation
             logging.info(f"  🔊 {top_phonemes} - Start: {phoneme_info['start']}s, End: {phoneme_info['end']}s")
 
-        # Step 5: Choose LLM for Pronunciation Evaluation
+        # Step 6: Choose LLM for Pronunciation Evaluation
         logging.info("\n⚙️ Select LLM: [1] OpenAI | [2] Local LLM")
         choice = input("Enter 1 or 2: ").strip()
 
