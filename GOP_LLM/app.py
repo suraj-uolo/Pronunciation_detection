@@ -94,7 +94,6 @@ with col1:
         st.write("Recording... Please wait ⏳")
         st.session_state.audio_path = recorder.record_audio(duration=5)
         st.success("Recording Complete ✅")
-        # st.audio(st.session_state.audio_path, format="audio/wav")
 
 with col2:
     st.subheader("📂 Upload an Audio File")
@@ -104,7 +103,6 @@ with col2:
         with open(file_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
         st.session_state.audio_path = file_path
-        # st.audio(st.session_state.audio_path, format="audio/wav")
 
 # Ensure Audio is Available
 if not st.session_state.audio_path:
