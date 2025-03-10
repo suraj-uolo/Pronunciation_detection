@@ -28,20 +28,25 @@ def evaluate_pronunciation_open_ai(transcribed_text: str, expected_text: str, au
     Returns:
         dict: Contains AI-generated pronunciation feedback and token usage details.
     """
-    prompt = (f"Compare the user's pronunciation with the expected phonemes."
-              f"1. First, check if the transcribed text matches the expected text."  
-              f"2. For words that match, compare their phonemes. Also Check if missing trancripted words have some phonemes in the audio."
-              f"3. Each expected phoneme there is a list of three probable phonemes from the audio."  
-              f"4. A phoneme is considered correct if it appears in any of the three probable phonemes."  
-              f"5. Calculate the match percentage per word based on the number of correct phonemes. Ignore stress markers."  
-              f"6. Provide a clear comparison per word, including expected phonemes, detected phonemes, and percentage match."  
-              f" 7. Focus only on meaningful mismatches—skip redundant details."  
-              f"Return only the phoneme comparison and percentage match per word—nothing else."
-              f"Expected Text:`{expected_text}`"
-              f"Transcribed Text: `{transcribed_text}`"
-              f"Expected Phonemes: `{expected_phonemes}`" 
-              f"Audio Phonemes: `{audio_phonemes}`"
-            )   
+    prompt = (
+        "Compare the user's pronunciation with the expected phonemes. Follow these steps:\n"
+        "1. Verify if the transcribed text matches the expected text.\n"
+        "2. For matching words, compare their phonemes. If words are missing in the transcription, check if their phonemes appear in the audio.\n"
+        "3. For each expected phoneme, identify three probable phonemes list from the audio.\n"
+        "4. A phoneme is correct if it appears in any of the three probable phonemes.\n"
+        "5. Do not miss any phonemes in the audio if it is present, Recheck present audio phonemes if there is trancription but no or less matched phonemes.\n"
+        "6. Calculate the match percentage per word based on  number of correct phonemes per word (ignore stress markers).\n"
+        "7. Provide a clear comparison per word, including:\n"
+        "   - Expected phonemes\n"
+        "   - Detected phonemes\n"
+        "   - Percentage match\n"
+        "8. If a word has a 0% match, recheck its phonemes again.\n"
+        f"Expected Text: `{expected_text}`\n"
+        f"Transcribed Text: `{transcribed_text}`\n"
+        f"Expected Phonemes: `{expected_phonemes}`\n"
+        f"Audio Phonemes: `{audio_phonemes}`"
+    )
+
 
     try:
         logging.info("Sending request to OpenAI...")

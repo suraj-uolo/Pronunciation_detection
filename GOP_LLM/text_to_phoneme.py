@@ -18,3 +18,8 @@ class TextToPhonemeConverter:
         except Exception as e:
             logging.error(f"❌ Error in text phonemization: {e}")
             raise
+
+# Convert text to phonemes
+converter = TextToPhonemeConverter(language="en-us", backend="espeak")
+phonemes = converter.text_to_phonemes("Hello world")
+print(phonemes)

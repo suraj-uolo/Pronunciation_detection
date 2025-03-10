@@ -4,20 +4,20 @@ import os
 import logging
 import re
 from audio_recorder import AudioRecorder
-from audio_cleaner import AudioCleaner  # ✅ New import for audio cleaning
+from audio_cleaner import AudioCleaner  # Handles background noise reduction and audio enhancement
 from transcription import Transcriber
 from audio_to_phoneme import AudioPhonemeProcessor
 from text_to_phoneme import TextToPhonemeConverter
 from analysis_open_ai import evaluate_pronunciation_open_ai
 from analysis_open_llm import evaluate_pronunciation_llama
 
-# Configure Logging
+# Set up logging to track issues and debug efficiently
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Streamlit Page Configuration
+# Configure the Streamlit page layout
 st.set_page_config(page_title="Speech Pronunciation Analysis", layout="wide")
 
-# Custom Styling for Improved UI
+# Custom styling to improve the UI experience
 st.markdown("""
     <style>
         .container {
@@ -52,7 +52,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Helper Function to Create a Styled Container
+# Function to create styled containers for displaying content
 def create_container(title, content):
     return f"""
         <div class="container">
@@ -63,16 +63,15 @@ def create_container(title, content):
         </div>
     """
 
-# Function to Format LLM Feedback for Proper Display
+# Function to clean and format feedback from the language model for display
 def format_llm_feedback(feedback):
-    """Cleans and formats LLM feedback for proper HTML rendering in Streamlit."""
-    feedback = re.sub(r"[*•]", "", feedback)  # Remove asterisks and bullet points
-    feedback = re.sub(r"###\s*", "", feedback)  # Remove '###' headers
-    feedback = feedback.replace("\n", "<br>")  # Convert newlines to HTML line breaks
-    feedback = re.sub(r"</div>\s*$", "", feedback, flags=re.MULTILINE)
+    feedback = re.sub(r"[*•]", "", feedback)  # Remove bullet points
+    feedback = re.sub(r"###\s*", "", feedback)  # Remove section headers
+    feedback = feedback.replace("\n", "<br>")  # Convert newlines into HTML line breaks
+    feedback = re.sub(r"</div>\s*$", "", feedback, flags=re.MULTILINE)  # Clean up trailing div tags
     return feedback.strip()
 
-# Initialize Session State
+# Initialize session state variables for storing audio paths
 if 'audio_path' not in st.session_state:
     st.session_state.audio_path = None
 if 'cleaned_audio_path' not in st.session_state:
@@ -80,11 +79,11 @@ if 'cleaned_audio_path' not in st.session_state:
 
 st.title("🎙️ Speech Pronunciation Analysis")
 
-# **Editable Reference Text**
+# Section for users to input a reference sentence to compare their pronunciation against
 st.subheader("📖 Reference Text")
 reference_text = st.text_input("Enter reference text for pronunciation comparison:", "hello good morning")
 
-# **Audio Input Section**
+# Section for audio input: users can either record live or upload an audio file
 col1, col2 = st.columns(2)
 
 with col1:
@@ -104,16 +103,17 @@ with col2:
             f.write(uploaded_file.getbuffer())
         st.session_state.audio_path = file_path
 
-# Ensure Audio is Available
+# Ensure that an audio file is available before proceeding
 if not st.session_state.audio_path:
     st.warning("Please record or upload an audio file to proceed.")
     st.stop()
 
-# **Step 2: Clean the Recorded/Uploaded Audio**
+# Process the recorded or uploaded audio by cleaning it to remove noise
 st.subheader("🎵 Listen to Original and Cleaned Audio")
 cleaner = AudioCleaner()
 st.session_state.cleaned_audio_path = cleaner.clean_audio(st.session_state.audio_path)
 
+# Display the original and cleaned audio for comparison
 col1, col2 = st.columns(2)
 with col1:
     st.markdown("🎧 **Original Audio**")
@@ -122,17 +122,17 @@ with col2:
     st.markdown("🎧 **Cleaned Audio**")
     st.audio(st.session_state.cleaned_audio_path, format="audio/wav")
 
-# **Model Selection with Persistence**
+# Model selection for pronunciation evaluation
 st.subheader("⚙️ Choose Model for Evaluation")
 
 if "model_choice" not in st.session_state:
-    st.session_state.model_choice = "OpenAI"  # Default to OpenAI
+    st.session_state.model_choice = "OpenAI"  # Default model selection
 
 st.session_state.model_choice = st.radio("Select Model:", ["OpenAI", "Local LLM"], index=0 if st.session_state.model_choice == "OpenAI" else 1)
 
-# **Process Audio**
+# Process the audio and extract relevant data
 try:
-    # **Transcription (Using Cleaned Audio)**
+    # Convert the cleaned audio into text
     transcriber = Transcriber()
     transcript = transcriber.transcribe_audio(st.session_state.cleaned_audio_path)
     if not transcript:
@@ -142,7 +142,7 @@ try:
     st.subheader("📝 Transcribed Text")
     st.write(f"**{transcript}**")
 
-    # **Expected Phonemes Extraction**
+    # Convert the reference text into phonemes
     text_phoneme_converter = TextToPhonemeConverter()
     expected_phonemes = text_phoneme_converter.text_to_phonemes(reference_text)
     if not expected_phonemes:
@@ -151,16 +151,16 @@ try:
 
     expected_phoneme_str = {word: " ".join(phonemes) for word, phonemes in expected_phonemes.items()}
 
-    # **Extracted Phonemes from Cleaned Audio**
+    # Extract phonemes from the cleaned audio
     phoneme_processor = AudioPhonemeProcessor()
     phoneme_timestamps = phoneme_processor.process_audio(st.session_state.cleaned_audio_path)
     if not phoneme_timestamps:
         st.error("No phoneme data extracted. Please try again.")
         st.stop()
 
-    extracted_audio_phonemes = [" | ".join(p["phonemes"]) for p in phoneme_timestamps]  # Include all top 3 phonemes
+    extracted_audio_phonemes = [" | ".join(p["phonemes"]) for p in phoneme_timestamps]  # Collect all detected phonemes
 
-    # **Display Results in Three Columns**
+    # Display results in three sections: expected phonemes, extracted phonemes, and evaluation feedback
     st.markdown("---")
     col1, col2, col3 = st.columns(3)
 
@@ -179,7 +179,7 @@ try:
     with col2:
         st.markdown(create_container("🔊 Extracted Audio Phonemes", extracted_phoneme_content), unsafe_allow_html=True)
 
-    # **Evaluate Pronunciation**
+    # Run the pronunciation evaluation using the selected model
     evaluation_result = evaluate_pronunciation_open_ai(
         transcribed_text=transcript,
         expected_text=reference_text,
