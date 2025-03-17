@@ -13,7 +13,7 @@ client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # OpenAI model configuration
-OPENAI_MODEL = "gpt-4o-mini-2024-07-18"
+OPENAI_MODEL = "ft:gpt-4o-mini-2024-07-18:uolo-ai:gop-1:BADSDJ8z:ckpt-step-360"
 
 def evaluate_pronunciation_open_ai(transcribed_text: str, expected_text: str, audio_phonemes: str, expected_phonemes: str):
     """
@@ -41,6 +41,7 @@ def evaluate_pronunciation_open_ai(transcribed_text: str, expected_text: str, au
         "   - Detected phonemes\n"
         "   - Percentage match\n"
         "8. If a word has a 0% match, recheck its phonemes again.\n"
+        "9. only provide word, expected phonemes, detected phonemes, percentage match for each word as output.\n"
         f"Expected Text: `{expected_text}`\n"
         f"Transcribed Text: `{transcribed_text}`\n"
         f"Expected Phonemes: `{expected_phonemes}`\n"

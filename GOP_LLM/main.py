@@ -6,6 +6,7 @@ from audio_to_phoneme import AudioPhonemeProcessor
 from text_to_phoneme import TextToPhonemeConverter
 from analysis_open_ai import evaluate_pronunciation_open_ai  # ✅ OpenAI evaluation
 from analysis_open_llm import evaluate_pronunciation_llama  # ✅ Local LLM evaluation
+import json
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -34,7 +35,7 @@ def main():
             return
 
         # Step 4: Extract Expected Phonemes from Reference Text
-        reference_text = "hello good morning"
+        reference_text = "hello good morning, how are you?"
         logging.info(f"\n📖 Reference Text: {reference_text}")  # Display reference text
         text_phoneme_converter = TextToPhonemeConverter()
         expected_phonemes = text_phoneme_converter.text_to_phonemes(reference_text)
@@ -66,6 +67,8 @@ def main():
             extracted_audio_phonemes.append(top_phonemes)  # Collect all phonemes for evaluation
             logging.info(f"  🔊 {top_phonemes} - Start: {phoneme_info['start']}s, End: {phoneme_info['end']}s")
 
+        # json.dump(expected_phonemes, open("expected_phonemes.json", "w"), indent=4)
+        # json.dump(extracted_audio_phonemes, open("extracted_audio_phonemes.json", "w"), indent=4)
         # Step 6: Choose LLM for Pronunciation Evaluation
         logging.info("\n⚙️ Select LLM: [1] OpenAI | [2] Local LLM")
         choice = input("Enter 1 or 2: ").strip()

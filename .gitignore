@@ -7,3 +7,7 @@ Allosaurus_research.pdf
 cleaned_recordings
 __pycache__
 test_recordings
+fine_tune_gop.jsonl
+fine_tune_val_gop.jsonl
+fine_tune.ipynb
+fine_tune_GOP.xlsx

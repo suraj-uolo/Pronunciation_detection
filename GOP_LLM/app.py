@@ -89,10 +89,12 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("🎤 Record Live Audio")
     recorder = AudioRecorder()
+
     if st.button("🔴 Start Recording"):
-        st.write("Recording... Please wait ⏳")
+        st.write("Recording... Please Speak Clearly⏳")
         st.session_state.audio_path = recorder.record_audio(duration=5)
         st.success("Recording Complete ✅")
+
 
 with col2:
     st.subheader("📂 Upload an Audio File")
@@ -134,13 +136,14 @@ st.session_state.model_choice = st.radio("Select Model:", ["OpenAI", "Local LLM"
 try:
     # Convert the cleaned audio into text
     transcriber = Transcriber()
-    transcript = transcriber.transcribe_audio(st.session_state.cleaned_audio_path)
+    result, transcript = transcriber.transcribe_audio(st.session_state.cleaned_audio_path)
     if not transcript:
         st.error("No transcription available. Please try again.")
         st.stop()
 
     st.subheader("📝 Transcribed Text")
-    st.write(f"**{transcript}**")
+    st.write(f"**All Raw Recognition Output:** {result}")
+    st.write(f"**Final Transcript:** {transcript}")
 
     # Convert the reference text into phonemes
     text_phoneme_converter = TextToPhonemeConverter()
