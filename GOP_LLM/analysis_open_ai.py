@@ -13,7 +13,7 @@ client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # OpenAI model configuration
-OPENAI_MODEL = "ft:gpt-4o-mini-2024-07-18:uolo-ai:gop-1:BADSDJ8z:ckpt-step-360"
+OPENAI_MODEL = "gpt-4o-mini-2024-07-18"
 
 def evaluate_pronunciation_open_ai(transcribed_text: str, expected_text: str, audio_phonemes: str, expected_phonemes: str):
     """

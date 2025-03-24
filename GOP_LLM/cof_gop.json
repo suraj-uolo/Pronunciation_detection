@@ -1,0 +1,242 @@
+{
+  "status": "success",
+  "speech_score": {
+    "transcript": "WHICH WOULD YOU PREFER TEA OR COFFEE",
+    "word_score_list": [
+      {
+        "word": "WHICH WOULD YOU PREFER TEA OR COFFEE",
+        "quality_score": 21,
+        "phone_score_list": [
+          {
+            "phone": "W",
+            "quality_score": 600.0,
+            "stress_level": null,
+            "sound_most_like": "W"
+          },
+          {
+            "phone": "IH",
+            "quality_score": 6600.0,
+            "stress_level": null,
+            "sound_most_like": "IH"
+          },
+          {
+            "phone": "CH",
+            "quality_score": 700.0,
+            "stress_level": null,
+            "sound_most_like": "CH"
+          },
+          {
+            "phone": "UH",
+            "quality_score": 100.0,
+            "stress_level": null,
+            "sound_most_like": "UH"
+          },
+          {
+            "phone": "D",
+            "quality_score": 2100.0,
+            "stress_level": null,
+            "sound_most_like": "D"
+          },
+          {
+            "phone": "Y",
+            "quality_score": 500.0,
+            "stress_level": null,
+            "sound_most_like": "Y"
+          },
+          {
+            "phone": "UW",
+            "quality_score": 1000.0,
+            "stress_level": null,
+            "sound_most_like": "UW"
+          },
+          {
+            "phone": "P",
+            "quality_score": 900.0,
+            "stress_level": null,
+            "sound_most_like": "P"
+          },
+          {
+            "phone": "R",
+            "quality_score": 2200.0,
+            "stress_level": null,
+            "sound_most_like": "R"
+          },
+          {
+            "phone": "AH",
+            "quality_score": 10000.0,
+            "stress_level": null,
+            "sound_most_like": "AH"
+          },
+          {
+            "phone": "F",
+            "quality_score": 100.0,
+            "stress_level": null,
+            "sound_most_like": "F"
+          },
+          {
+            "phone": "ER",
+            "quality_score": 1500.0,
+            "stress_level": null,
+            "sound_most_like": "ER"
+          },
+          {
+            "phone": "SIL",
+            "quality_score": 0.0,
+            "stress_level": null,
+            "sound_most_like": "SIL"
+          },
+          {
+            "phone": "T",
+            "quality_score": 4400.0,
+            "stress_level": null,
+            "sound_most_like": "T"
+          },
+          {
+            "phone": "IY",
+            "quality_score": 300.0,
+            "stress_level": null,
+            "sound_most_like": "IY"
+          },
+          {
+            "phone": "AO",
+            "quality_score": 6800.0,
+            "stress_level": null,
+            "sound_most_like": "AO"
+          },
+          {
+            "phone": "K",
+            "quality_score": 500.0,
+            "stress_level": null,
+            "sound_most_like": "K"
+          },
+          {
+            "phone": "AA",
+            "quality_score": 1000.0,
+            "stress_level": null,
+            "sound_most_like": "AA"
+          }
+        ]
+      }
+    ],
+    "overall_metrics": {
+      "pronunciation_score": 21,
+      "phone_durations": [
+        [
+          "W",
+          0.23,
+          0.28
+        ],
+        [
+          "IH",
+          0.28,
+          0.33
+        ],
+        [
+          "CH",
+          0.33,
+          0.4
+        ],
+        [
+          "W",
+          0.4,
+          0.45
+        ],
+        [
+          "UH",
+          0.45,
+          0.51
+        ],
+        [
+          "D",
+          0.51,
+          0.56
+        ],
+        [
+          "Y",
+          0.56,
+          0.58
+        ],
+        [
+          "UW",
+          0.58,
+          0.65
+        ],
+        [
+          "P",
+          0.65,
+          0.68
+        ],
+        [
+          "R",
+          0.68,
+          0.71
+        ],
+        [
+          "AH",
+          0.71,
+          0.75
+        ],
+        [
+          "F",
+          0.75,
+          0.8
+        ],
+        [
+          "ER",
+          0.8,
+          0.89
+        ],
+        [
+          "SIL",
+          0.89,
+          1.02
+        ],
+        [
+          "T",
+          1.02,
+          1.05
+        ],
+        [
+          "IY",
+          1.05,
+          1.24
+        ],
+        [
+          "SIL",
+          1.24,
+          1.26
+        ],
+        [
+          "AO",
+          1.26,
+          1.38
+        ],
+        [
+          "R",
+          1.38,
+          1.42
+        ],
+        [
+          "K",
+          1.42,
+          1.46
+        ],
+        [
+          "AA",
+          1.46,
+          1.52
+        ],
+        [
+          "F",
+          1.52,
+          1.55
+        ],
+        [
+          "IY",
+          1.55,
+          1.56
+        ]
+      ]
+    }
+  }
+}

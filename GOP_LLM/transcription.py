@@ -1,10 +1,11 @@
 import logging
 import speech_recognition as sr
+import whisper_timestamped as whisper
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 class Transcriber:
-    def __init__(self, verbose: bool = True, engine="google"):
+    def __init__(self, verbose: bool = True, engine="whisper"):
         """Initialize Transcriber with optional verbose mode and engine."""
         self.recognizer = sr.Recognizer()
         self.verbose = verbose
@@ -44,6 +45,20 @@ class Transcriber:
                 elif self.engine == "sphinx":
                     transcript = self.recognizer.recognize_sphinx(audio)
 
+                elif self.engine == 'whisper':
+                    audio = whisper.load_audio(audio_path)
+                    model = whisper.load_model("small")
+                    result = model.transcribe( audio,
+                                               language='en',
+                                               word_timestamps=True,
+                                               best_of=3,
+                                               beam_size=10,  # Increase beam size for more accurate results
+                                               temperature=[0, 0.2, 0.5],  # Multi-pass decoding for sensitivity
+                                               patience=1.2,  # Explore more transcription variations
+                                               fp16=False  # Improves precision on CPU
+                                            )
+                    results = result
+                    transcript = result['text']
                 else:
                     logging.error(f"❌ Unsupported engine: {self.engine}")
                     return ""

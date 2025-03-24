@@ -7,6 +7,8 @@ from text_to_phoneme import TextToPhonemeConverter
 from analysis_open_ai import evaluate_pronunciation_open_ai  # ✅ OpenAI evaluation
 from analysis_open_llm import evaluate_pronunciation_llama  # ✅ Local LLM evaluation
 import json
+from matching_score import main as generate_match_summary
+import sys
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -27,18 +29,24 @@ def main():
 
         # Step 3: Transcribe Audio (Using Cleaned Audio)
         logging.info("\n📝 Transcribing cleaned audio...")
-        transcriber = Transcriber()
-        transcript = transcriber.transcribe_audio(cleaned_audio_path)
+        transcriber = Transcriber(engine='whisper')
+        # transcriber = Transcriber(engine='google')  # Use Google Speech API
+        # transcript = transcriber.transcribe_audio(cleaned_audio_path)
+
+        timestamped_transcript, transcript = transcriber.transcribe_audio(cleaned_audio_path)
+
+        json.dump(timestamped_transcript, open("timestamped_transcript.json", "w", encoding='utf-8'), indent=2, ensure_ascii=False)
 
         if not transcript:
             logging.warning("❌ No transcription available. Exiting.")
             return
 
         # Step 4: Extract Expected Phonemes from Reference Text
-        reference_text = "hello good morning, how are you?"
+        reference_text = sys.argv[1]
         logging.info(f"\n📖 Reference Text: {reference_text}")  # Display reference text
         text_phoneme_converter = TextToPhonemeConverter()
         expected_phonemes = text_phoneme_converter.text_to_phonemes(reference_text)
+        json.dump(expected_phonemes, open("text_phonemes_expected.json", "w", encoding='utf-8'), indent=2, ensure_ascii=False)
 
         if not expected_phonemes:
             logging.warning("❌ Could not generate expected phonemes. Exiting.")
@@ -56,6 +64,8 @@ def main():
         phoneme_processor = AudioPhonemeProcessor()
         phoneme_timestamps = phoneme_processor.process_audio(cleaned_audio_path)
 
+        json.dump(phoneme_timestamps, open("phoneme_timestamps.json", "w", encoding='utf-8'), indent=2, ensure_ascii=False)
+
         if not phoneme_timestamps:
             logging.warning("❌ No phoneme data extracted. Exiting.")
             return
@@ -66,6 +76,11 @@ def main():
             top_phonemes = ", ".join(phoneme_info["phonemes"])  # Include all top 3 phonemes
             extracted_audio_phonemes.append(top_phonemes)  # Collect all phonemes for evaluation
             logging.info(f"  🔊 {top_phonemes} - Start: {phoneme_info['start']}s, End: {phoneme_info['end']}s")
+
+         # Generate match summary
+        logging.info("\n📝 Generating word-level correctness summary...")
+        logging.info(f"\n📝 Word-level correctness summary:\n")
+        generate_match_summary()
 
         # json.dump(expected_phonemes, open("expected_phonemes.json", "w"), indent=4)
         # json.dump(extracted_audio_phonemes, open("extracted_audio_phonemes.json", "w"), indent=4)
@@ -96,6 +111,8 @@ def main():
         # Display feedback
         logging.info("\n📢 Pronunciation Feedback:")
         logging.info(evaluation_result.get("feedback", "No feedback received."))
+
+       
 
     except Exception as e:
         logging.error(f"❌ Critical error: {e}", exc_info=True)

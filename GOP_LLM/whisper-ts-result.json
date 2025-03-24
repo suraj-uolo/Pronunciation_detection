@@ -1,0 +1,71 @@
+{
+  "text": " Which would you prefer the R-Coffee?",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.76,
+      "end": 4.7,
+      "text": " Which would you prefer the R-Coffee?",
+      "tokens": [
+        50364,
+        3013,
+        576,
+        291,
+        4382,
+        264,
+        497,
+        12,
+        34,
+        4506,
+        1653,
+        30,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.8037355286734444,
+      "compression_ratio": 0.8181818181818182,
+      "no_speech_prob": 0.10012826323509216,
+      "confidence": 0.497,
+      "words": [
+        {
+          "text": "Which",
+          "start": 0.76,
+          "end": 1.26,
+          "confidence": 0.609
+        },
+        {
+          "text": "would",
+          "start": 1.26,
+          "end": 1.72,
+          "confidence": 0.925
+        },
+        {
+          "text": "you",
+          "start": 1.72,
+          "end": 2.06,
+          "confidence": 0.991
+        },
+        {
+          "text": "prefer",
+          "start": 2.06,
+          "end": 2.7,
+          "confidence": 0.989
+        },
+        {
+          "text": "the",
+          "start": 2.7,
+          "end": 3.64,
+          "confidence": 0.29
+        },
+        {
+          "text": "R-Coffee?",
+          "start": 3.64,
+          "end": 4.7,
+          "confidence": 0.356
+        }
+      ]
+    }
+  ],
+  "language": "en"
+}

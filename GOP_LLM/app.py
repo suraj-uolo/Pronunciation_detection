@@ -10,6 +10,8 @@ from audio_to_phoneme import AudioPhonemeProcessor
 from text_to_phoneme import TextToPhonemeConverter
 from analysis_open_ai import evaluate_pronunciation_open_ai
 from analysis_open_llm import evaluate_pronunciation_llama
+import json
+from matching_score import main as generate_match_summary
 
 # Set up logging to track issues and debug efficiently
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -57,7 +59,7 @@ def create_container(title, content):
     return f"""
         <div class="container">
             <div class="section-title">{title}</div>
-            <div class="scrollable-content">
+            <div class="scrollable-content" style="white-space: pre-line;">
                 {content}
             </div>
         </div>
@@ -92,7 +94,7 @@ with col1:
 
     if st.button("🔴 Start Recording"):
         st.write("Recording... Please Speak Clearly⏳")
-        st.session_state.audio_path = recorder.record_audio(duration=5)
+        st.session_state.audio_path = recorder.record_audio(duration=8)
         st.success("Recording Complete ✅")
 
 
@@ -137,12 +139,33 @@ try:
     # Convert the cleaned audio into text
     transcriber = Transcriber()
     result, transcript = transcriber.transcribe_audio(st.session_state.cleaned_audio_path)
+
     if not transcript:
         st.error("No transcription available. Please try again.")
         st.stop()
+    
+    json.dump(result, open("timestamped_transcript.json", "w", encoding='utf-8'), indent=2, ensure_ascii=False)
 
     st.subheader("📝 Transcribed Text")
-    st.write(f"**All Raw Recognition Output:** {result}")
+    
+    st.markdown("### 🎙️ All Raw Recognition Output:")
+
+    for segment in result['segments']:
+        st.markdown(f"**🗨️ {segment['text']}**  \n ⏳ {segment['start']}s → {segment['end']}s", unsafe_allow_html=True)
+        
+        words = segment['words']
+    
+    # Display words in rows of 4
+    for i in range(0, len(words), 4):
+        cols = st.columns(4)  # Create 4 columns
+        
+        for j in range(4):
+            if i + j < len(words):  # Check to avoid index error
+                word = words[i + j]
+                with cols[j]:
+                    st.markdown(f"`{word['word']}`  \n 🔹 {word['probability']:.2f}  \n ⏳ {word['start']}s → {word['end']}s")
+
+
     st.write(f"**Final Transcript:** {transcript}")
 
     # Convert the reference text into phonemes
@@ -151,6 +174,7 @@ try:
     if not expected_phonemes:
         st.error("Could not generate expected phonemes. Please try again.")
         st.stop()
+    json.dump(expected_phonemes, open("text_phonemes_expected.json", "w", encoding='utf-8'), indent=2, ensure_ascii=False)
 
     expected_phoneme_str = {word: " ".join(phonemes) for word, phonemes in expected_phonemes.items()}
 
@@ -161,11 +185,13 @@ try:
         st.error("No phoneme data extracted. Please try again.")
         st.stop()
 
+    json.dump(phoneme_timestamps, open("phoneme_timestamps.json", "w", encoding='utf-8'), indent=2, ensure_ascii=False)
+
     extracted_audio_phonemes = [" | ".join(p["phonemes"]) for p in phoneme_timestamps]  # Collect all detected phonemes
 
     # Display results in three sections: expected phonemes, extracted phonemes, and evaluation feedback
     st.markdown("---")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     expected_phoneme_content = "".join([
         f'<div class="item-row">🔹 <b>{word}</b>: <span class="highlight">{" ".join(phonemes)}</span></div>'
@@ -181,6 +207,13 @@ try:
         st.markdown(create_container("📖 Expected Phonemes", expected_phoneme_content), unsafe_allow_html=True)
     with col2:
         st.markdown(create_container("🔊 Extracted Audio Phonemes", extracted_phoneme_content), unsafe_allow_html=True)
+    with col3:
+        # Get the match summary and display it
+        match_summary = generate_match_summary()
+        if match_summary:
+            st.markdown(create_container("📝 Matching Score", match_summary), unsafe_allow_html=True)
+        else:
+            st.write("No matching score available")
 
     # Run the pronunciation evaluation using the selected model
     evaluation_result = evaluate_pronunciation_open_ai(
@@ -195,8 +228,9 @@ try:
         expected_phonemes=", ".join(expected_phoneme_str.values())
     )
 
-    with col3:
+    with col4:
         st.markdown(create_container("📢 Pronunciation Feedback", format_llm_feedback(evaluation_result.get("feedback", "No feedback received."))), unsafe_allow_html=True)
+    
 
 except Exception as e:
     st.error(f"❌ An error occurred: {e}")
