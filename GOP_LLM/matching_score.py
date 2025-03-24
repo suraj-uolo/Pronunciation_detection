@@ -36,36 +36,43 @@ def get_spoken_words(timestamped_transcript):
 def match_words_to_expected(spoken_words, text_phonemes_expected):
     """Match spoken words to expected words and create SpokenWord objects."""
     result = []
-    i, j = 0, 0
     expected_words = list(text_phonemes_expected.keys())
+    spoken_word_index = 0
     
-    while j < len(text_phonemes_expected):
-        expected_word = expected_words[j]
-        expected_phonemes = list(text_phonemes_expected[expected_word])
-        expected_word = expected_words[j].lower()
+    # Convert all spoken words to lowercase for comparison
+    processed_spoken_words = [(word[0].lower(), word[1], word[2]) for word in spoken_words]
+    
+    for expected_word in expected_words:
+        expected_word_lower = expected_word.lower()
+        expected_phonemes = text_phonemes_expected[expected_word_lower]
         
-        st = i
-        while st < len(spoken_words):
-            spoken_word_tuple = spoken_words[st]
-            spoken_word = spoken_word_tuple[0][:len(expected_word)].lower()
-            if spoken_word == expected_word:
+        # Look for the word in remaining spoken words
+        found = False
+        for i in range(spoken_word_index, len(processed_spoken_words)):
+            spoken_word, start, end = processed_spoken_words[i]
+            
+            # Clean up spoken word (remove punctuation, etc)
+            spoken_word = spoken_word.strip('.,?!')
+            
+            if spoken_word == expected_word_lower:
                 result.append(SpokenWord(
                     word=spoken_word,
-                    start=spoken_word_tuple[1],
-                    end=spoken_word_tuple[2],
+                    start=start,
+                    end=end,
                     phonemes=[],
                     expected_phonemes=expected_phonemes,
                     is_missing=False,
                     is_extra=False,
                     is_match=True
                 ))
+                spoken_word_index = i + 1
+                found = True
                 break
-            else:
-                st += 1
-        else:
-            i = st + 1
+        
+        if not found:
+            # Word was expected but not found in speech
             result.append(SpokenWord(
-                word=expected_word,
+                word=expected_word_lower,
                 start=0,
                 end=0,
                 phonemes=[],
@@ -74,7 +81,22 @@ def match_words_to_expected(spoken_words, text_phonemes_expected):
                 is_extra=False,
                 is_match=False
             ))
-        j += 1
+    
+    # Check for any extra spoken words
+    for i in range(spoken_word_index, len(processed_spoken_words)):
+        spoken_word, start, end = processed_spoken_words[i]
+        if spoken_word.strip('.,?!') not in text_phonemes_expected:
+            result.append(SpokenWord(
+                word=spoken_word,
+                start=start,
+                end=end,
+                phonemes=[],
+                expected_phonemes=[],
+                is_missing=False,
+                is_extra=True,
+                is_match=False
+            ))
+    
     return result
 
 def match_word_phoneme(word: SpokenWord, phoneme_timestamps: list[dict[Literal['start', 'end', 'phonemes'], float | list[str]]]):
@@ -102,6 +124,10 @@ def main():
     # Load data
     phoneme_timestamps, text_phonemes_expected, timestamped_transcript = load_data()
     
+    # Create case-insensitive version of the dictionary
+    text_phonemes_expected = {word.lower(): phonemes 
+                            for word, phonemes in text_phonemes_expected.items()}
+    
     # Get spoken words
     spoken_words = get_spoken_words(timestamped_transcript)
     
@@ -111,41 +137,49 @@ def main():
     # Match phonemes for each word
     matched_word_phonemes = []
     for word in result:
-        phoneme_matches = match_word_phoneme(word, phoneme_timestamps)
-        matched_word_phonemes.append({word.word: phoneme_matches})
+        if not word.is_missing and not word.is_extra:  # Only process words that were actually spoken
+            phoneme_matches = match_word_phoneme(word, phoneme_timestamps)
+            matched_word_phonemes.append({word.word: phoneme_matches})
     
     # Save results
     with open('matched_word_phonemes.json', 'w') as f:
         json.dump(matched_word_phonemes, f, indent=4, ensure_ascii=False)
     
     summary = ""
-    # Example of getting best match for each word
+    processed_count = 0
+    total_words = len(text_phonemes_expected)
+    
+    # Process each word's phonemes
     for word_dict in matched_word_phonemes:
         word = list(word_dict.keys())[0]
         phoneme_options = word_dict[word]
+        
         if phoneme_options:
-            candidate_phonemes = [
-                [phoneme[0], phoneme[2], phoneme[4]] 
-                for phoneme in phoneme_options
-            ]
-            correct_ipa = text_phonemes_expected[word]
-            best_match = get_best_match(correct_ipa, candidate_phonemes)
-            print(f"Word: {word}")
-            print(f"Expected IPA: {correct_ipa}")
-            print(f"Best match: {best_match}")
-            print("---")
-
-            summary += f"Word: {word}\n"
-            summary += f"Expected IPA: {correct_ipa}\n"
-            summary += f"Best match: {best_match}\n"
-            summary += "---\n"
-
-            # yield {
-            #     'word': word,
-            #     'expected_ipa': correct_ipa,
-            #     'best_match': best_match
-            # }
-
+            try:
+                candidate_phonemes = []
+                for phoneme in phoneme_options:
+                    phoneme_subset = phoneme[:3] if len(phoneme) >= 3 else phoneme
+                    candidate_phonemes.append(phoneme_subset)
+                
+                correct_ipa = text_phonemes_expected[word.lower()]
+                best_match = get_best_match(correct_ipa, candidate_phonemes)
+                
+                print(f"Word: {word}")
+                print(f"Expected IPA: {correct_ipa}")
+                print(f"Best match: {best_match}")
+                print("---")
+                
+                summary += f"Word: {word}\n"
+                summary += f"Expected IPA: {correct_ipa}\n"
+                summary += f"Best match: {best_match}\n"
+                summary += "---\n"
+                
+                processed_count += 1
+            except (IndexError, KeyError) as e:
+                print(f"Skipping word '{word}' due to error: {e}")
+                continue
+    
+    print(f"\nProcessed {processed_count} out of {total_words} words")
     return summary
 
 if __name__ == "__main__":

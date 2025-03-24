@@ -16,10 +16,12 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 def main():
     try:
         # Step 1: Record Audio
-        logging.info("\n🎤 Recording audio...")
-        recorder = AudioRecorder()
-        audio_path = recorder.record_audio(duration=5)
-        logging.info(f"✅ Audio recorded: {audio_path}")
+        # logging.info("\n🎤 Recording audio...")
+        # recorder = AudioRecorder()
+        # audio_path = recorder.record_audio(duration=5)
+        audio_path = "/Users/uolo/Desktop/Pronunciation_detection/test_recordings/8.wav"
+        # logging.info(f"✅ Audio recorded: {audio_path}")
+        logging.info(f"✅ Audio uploaded: {audio_path}")
 
         # Step 2: Clean the Recorded Audio
         logging.info("\n🧼 Cleaning audio to reduce noise...")
@@ -42,7 +44,8 @@ def main():
             return
 
         # Step 4: Extract Expected Phonemes from Reference Text
-        reference_text = sys.argv[1]
+        # reference_text = sys.argv[1]
+        reference_text = "Can you solve this riddle? What can we hold without using our hands? Think, think. Yes, it is our breath"
         logging.info(f"\n📖 Reference Text: {reference_text}")  # Display reference text
         text_phoneme_converter = TextToPhonemeConverter()
         expected_phonemes = text_phoneme_converter.text_to_phonemes(reference_text)

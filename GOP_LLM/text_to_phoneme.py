@@ -11,8 +11,18 @@ class TextToPhonemeConverter:
     def text_to_phonemes(self, sentence: str):
         """Converts a sentence into phonemes using batch phonemization."""
         try:
-            phonemes = phonemize(sentence, language=self.language, backend=self.backend, strip=True, njobs=4)
-            word_phoneme_mapping = dict(zip(sentence.split(), phonemes.split()))
+            # Get the words from the input sentence and clean them
+            words = sentence.split()
+            # Remove punctuation from words
+            cleaned_words = [word.strip('.,!?:;') for word in words]
+            
+            # Phonemize each word individually to maintain correct mapping
+            word_phoneme_mapping = {}
+            for word in cleaned_words:
+                if word:  # Skip empty strings
+                    phonemes = phonemize(word, language=self.language, backend=self.backend, strip=True, njobs=1)
+                    word_phoneme_mapping[word] = phonemes.strip()
+            
             logging.info(f"🔠 Converted text to phonemes: {word_phoneme_mapping}")
             return word_phoneme_mapping
         except Exception as e:

@@ -80,4 +80,6 @@ class Transcriber:
 
 # Example Usage:
 transcriber = Transcriber()
-result = transcriber.transcribe_audio("cleaned_recordings/cleaned_recording_20250316_173609.wav")
+timestamped, result = transcriber.transcribe_audio("/Users/uolo/Desktop/Pronunciation_detection/test_recordings/5.wav")
+print(timestamped)
+print(result)
