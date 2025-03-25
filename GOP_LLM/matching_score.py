@@ -33,59 +33,37 @@ def get_spoken_words(timestamped_transcript):
             spoken_words.append((word['word'].strip(), word['start'], word['end']))
     return spoken_words
 
-def match_words_to_expected(spoken_words, text_phonemes_expected):
+def match_words_to_expected(spoken_words, text_phonemes_expected, reference_text):
     """Match spoken words to expected words and create SpokenWord objects."""
     result = []
-    expected_words = list(text_phonemes_expected.keys())
     spoken_word_index = 0
     
     # Convert all spoken words to lowercase for comparison
     processed_spoken_words = [(word[0].lower(), word[1], word[2]) for word in spoken_words]
     
-    for expected_word in expected_words:
-        expected_word_lower = expected_word.lower()
-        expected_phonemes = text_phonemes_expected[expected_word_lower]
-        
-        # Look for the word in remaining spoken words
-        found = False
-        for i in range(spoken_word_index, len(processed_spoken_words)):
-            spoken_word, start, end = processed_spoken_words[i]
-            
-            # Clean up spoken word (remove punctuation, etc)
-            spoken_word = spoken_word.strip('.,?!')
-            
-            if spoken_word == expected_word_lower:
-                result.append(SpokenWord(
-                    word=spoken_word,
-                    start=start,
-                    end=end,
-                    phonemes=[],
-                    expected_phonemes=expected_phonemes,
-                    is_missing=False,
-                    is_extra=False,
-                    is_match=True
-                ))
-                spoken_word_index = i + 1
-                found = True
-                break
-        
-        if not found:
-            # Word was expected but not found in speech
-            result.append(SpokenWord(
-                word=expected_word_lower,
-                start=0,
-                end=0,
-                phonemes=[],
-                expected_phonemes=expected_phonemes,
-                is_missing=True,
-                is_extra=False,
-                is_match=False
-            ))
+    # Get the sequence of expected words from reference text
+    expected_word_sequence = [word.lower().strip('.,?!') for word in reference_text.split()]
+    spoken_words_set = {word[0].lower().strip('.,?!') for word in spoken_words}
     
-    # Check for any extra spoken words
-    for i in range(spoken_word_index, len(processed_spoken_words)):
-        spoken_word, start, end = processed_spoken_words[i]
-        if spoken_word.strip('.,?!') not in text_phonemes_expected:
+    # First add all spoken words
+    while spoken_word_index < len(processed_spoken_words):
+        spoken_word, start, end = processed_spoken_words[spoken_word_index]
+        spoken_word = spoken_word.strip('.,?!')
+        
+        # If the word exists in expected phonemes, mark it as matched
+        if spoken_word in text_phonemes_expected:
+            result.append(SpokenWord(
+                word=spoken_word,
+                start=start,
+                end=end,
+                phonemes=[],
+                expected_phonemes=text_phonemes_expected[spoken_word],
+                is_missing=False,
+                is_extra=False,
+                is_match=True
+            ))
+        else:
+            # Word was spoken but not expected
             result.append(SpokenWord(
                 word=spoken_word,
                 start=start,
@@ -94,6 +72,21 @@ def match_words_to_expected(spoken_words, text_phonemes_expected):
                 expected_phonemes=[],
                 is_missing=False,
                 is_extra=True,
+                is_match=False
+            ))
+        spoken_word_index += 1
+    
+    # Then add any expected words that weren't spoken
+    for expected_word in expected_word_sequence:
+        if expected_word not in spoken_words_set and expected_word in text_phonemes_expected:
+            result.append(SpokenWord(
+                word=expected_word,
+                start=0,
+                end=0,
+                phonemes=[],
+                expected_phonemes=text_phonemes_expected[expected_word],
+                is_missing=True,
+                is_extra=False,
                 is_match=False
             ))
     
@@ -132,7 +125,7 @@ def main():
     spoken_words = get_spoken_words(timestamped_transcript)
     
     # Match words to expected
-    result = match_words_to_expected(spoken_words, text_phonemes_expected)
+    result = match_words_to_expected(spoken_words, text_phonemes_expected, timestamped_transcript['text'])
     
     # Match phonemes for each word
     matched_word_phonemes = []
@@ -147,7 +140,7 @@ def main():
     
     summary = ""
     processed_count = 0
-    total_words = len(text_phonemes_expected)
+    total_words = len([w for w in result if not w.is_extra])  # Count non-extra words
     
     # Process each word's phonemes
     for word_dict in matched_word_phonemes:

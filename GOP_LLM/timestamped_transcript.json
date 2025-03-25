@@ -1,172 +1,167 @@
 {
-  "text": " Dear Mother, your love is special. I cannot help but show. Like flowers in a garden, your love makes me grow.",
+  "text": " Can you solve this riddle? What can we hold without using our hands? Think, think. Yes, it is our breath.",
   "segments": [
     {
       "id": 0,
       "seek": 0,
       "start": 0.0,
-      "end": 16.02,
-      "text": " Dear Mother, your love is special. I cannot help but show. Like flowers in a garden, your love makes me grow.",
+      "end": 10.46,
+      "text": " Can you solve this riddle? What can we hold without using our hands? Think, think. Yes, it is our breath.",
       "tokens": [
         50364,
-        14383,
-        8931,
+        1664,
+        291,
+        5039,
+        341,
+        3973,
+        2285,
+        30,
+        708,
+        393,
+        321,
+        1797,
+        1553,
+        1228,
+        527,
+        2377,
+        30,
+        6557,
         11,
-        428,
-        959,
+        519,
+        13,
+        1079,
+        11,
+        309,
         307,
-        2121,
+        527,
+        6045,
         13,
-        286,
-        2644,
-        854,
-        457,
-        855,
-        13,
-        1743,
-        8085,
-        294,
-        257,
-        7431,
-        11,
-        428,
-        959,
-        1669,
-        385,
-        1852,
-        13,
-        51164
+        50914
       ],
       "temperature": 0,
-      "avg_logprob": -0.27172552306076575,
-      "compression_ratio": 1.1720430107526882,
-      "no_speech_prob": 0.06691469997167587,
+      "avg_logprob": -0.24987185796101888,
+      "compression_ratio": 1.1170212765957446,
+      "no_speech_prob": 0.0684184730052948,
       "words": [
         {
-          "word": " Dear",
+          "word": " Can",
           "start": 0.0,
-          "end": 1.08,
-          "probability": 0.8814924359321594
+          "end": 1.34,
+          "probability": 0.8135993480682373
         },
         {
-          "word": " Mother,",
-          "start": 1.08,
-          "end": 1.74,
-          "probability": 0.6710303425788879
+          "word": " you",
+          "start": 1.34,
+          "end": 1.66,
+          "probability": 0.9718031883239746
         },
         {
-          "word": " your",
-          "start": 2.58,
-          "end": 2.74,
-          "probability": 0.3526884913444519
+          "word": " solve",
+          "start": 1.66,
+          "end": 2.12,
+          "probability": 0.9921450018882751
         },
         {
-          "word": " love",
-          "start": 2.74,
-          "end": 3.38,
-          "probability": 0.8583139777183533
+          "word": " this",
+          "start": 2.12,
+          "end": 2.62,
+          "probability": 0.8423504829406738
+        },
+        {
+          "word": " riddle?",
+          "start": 2.62,
+          "end": 3.26,
+          "probability": 0.9078035354614258
+        },
+        {
+          "word": " What",
+          "start": 3.74,
+          "end": 4.06,
+          "probability": 0.9369157552719116
+        },
+        {
+          "word": " can",
+          "start": 4.06,
+          "end": 4.42,
+          "probability": 0.993505597114563
+        },
+        {
+          "word": " we",
+          "start": 4.42,
+          "end": 4.62,
+          "probability": 0.9368242025375366
+        },
+        {
+          "word": " hold",
+          "start": 4.62,
+          "end": 5.04,
+          "probability": 0.9783218502998352
+        },
+        {
+          "word": " without",
+          "start": 5.04,
+          "end": 5.44,
+          "probability": 0.9711493253707886
+        },
+        {
+          "word": " using",
+          "start": 5.44,
+          "end": 6.04,
+          "probability": 0.973581075668335
+        },
+        {
+          "word": " our",
+          "start": 6.04,
+          "end": 6.38,
+          "probability": 0.9737440347671509
+        },
+        {
+          "word": " hands?",
+          "start": 6.38,
+          "end": 6.68,
+          "probability": 0.9943391680717468
+        },
+        {
+          "word": " Think,",
+          "start": 7.14,
+          "end": 7.44,
+          "probability": 0.9161812663078308
+        },
+        {
+          "word": " think.",
+          "start": 7.94,
+          "end": 8.22,
+          "probability": 0.8883785605430603
+        },
+        {
+          "word": " Yes,",
+          "start": 8.72,
+          "end": 9.14,
+          "probability": 0.9588512778282166
+        },
+        {
+          "word": " it",
+          "start": 9.34,
+          "end": 9.5,
+          "probability": 0.9579315185546875
         },
         {
           "word": " is",
-          "start": 3.38,
-          "end": 4.64,
-          "probability": 0.9728392362594604
+          "start": 9.5,
+          "end": 9.8,
+          "probability": 0.955365002155304
         },
         {
-          "word": " special.",
-          "start": 4.64,
-          "end": 5.5,
-          "probability": 0.9869264364242554
+          "word": " our",
+          "start": 9.8,
+          "end": 10.1,
+          "probability": 0.9792948961257935
         },
         {
-          "word": " I",
-          "start": 6.36,
-          "end": 6.56,
-          "probability": 0.9690915942192078
-        },
-        {
-          "word": " cannot",
-          "start": 6.56,
-          "end": 7.14,
-          "probability": 0.8590855598449707
-        },
-        {
-          "word": " help",
-          "start": 7.14,
-          "end": 7.7,
-          "probability": 0.9970080256462097
-        },
-        {
-          "word": " but",
-          "start": 7.7,
-          "end": 8.1,
-          "probability": 0.9450187087059021
-        },
-        {
-          "word": " show.",
-          "start": 8.1,
-          "end": 8.58,
-          "probability": 0.7406357526779175
-        },
-        {
-          "word": " Like",
-          "start": 9.56,
-          "end": 9.92,
-          "probability": 0.9355325698852539
-        },
-        {
-          "word": " flowers",
-          "start": 9.92,
-          "end": 10.54,
-          "probability": 0.9566023945808411
-        },
-        {
-          "word": " in",
-          "start": 10.54,
-          "end": 11.14,
-          "probability": 0.9856319427490234
-        },
-        {
-          "word": " a",
-          "start": 11.14,
-          "end": 11.42,
-          "probability": 0.9271070957183838
-        },
-        {
-          "word": " garden,",
-          "start": 11.42,
-          "end": 11.92,
-          "probability": 0.9951103329658508
-        },
-        {
-          "word": " your",
-          "start": 12.76,
-          "end": 13.06,
-          "probability": 0.942359983921051
-        },
-        {
-          "word": " love",
-          "start": 13.06,
-          "end": 14.48,
-          "probability": 0.9899623990058899
-        },
-        {
-          "word": " makes",
-          "start": 14.48,
-          "end": 15.18,
-          "probability": 0.9877179861068726
-        },
-        {
-          "word": " me",
-          "start": 15.18,
-          "end": 15.56,
-          "probability": 0.9959903359413147
-        },
-        {
-          "word": " grow.",
-          "start": 15.56,
-          "end": 16.02,
-          "probability": 0.9948232173919678
+          "word": " breath.",
+          "start": 10.1,
+          "end": 10.46,
+          "probability": 0.972800076007843
         }
       ]
     }
